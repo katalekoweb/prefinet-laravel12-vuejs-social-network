@@ -28,7 +28,7 @@ class TagController extends Controller
     public function create()
     {
         $tag = new Tag;
-        return Inertia::render("Admin/tags/Form", compact('tag'));
+        return Inertia::render("Admin/Tags/Form", compact('tag'));
     }
 
     /**
@@ -45,7 +45,7 @@ class TagController extends Controller
      */
     public function show(Tag $tag)
     {
-        return Inertia::render("Admin/tags/Form", compact('tag'));
+        return Inertia::render("Admin/Tags/Form", compact('tag'));
     }
 
     /**
@@ -53,7 +53,7 @@ class TagController extends Controller
      */
     public function edit(Tag $tag)
     {
-        return Inertia::render("Admin/tags/Form", compact('tag'));
+        return Inertia::render("Admin/Tags/Form", compact('tag'));
     }
 
     /**

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('profile_tag', function (Blueprint $table) {
+        Schema::create('preferences', function (Blueprint $table) {
             $table->id();
             $table->uuid()->nullable();
             $table->foreignId('profile_id')->constrained()->cascadeOnDelete();
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('profile_tags');
+        Schema::dropIfExists('preferences');
     }
 };

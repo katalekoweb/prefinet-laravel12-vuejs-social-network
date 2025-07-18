@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Profile;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ProfileRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class ProfileRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +23,16 @@ class ProfileRequest extends FormRequest
      */
     public function rules(): array
     {
+        $profile = request()->route('profile');
+
         return [
-            //
+            "name" => ['required', 'string'],
+            "email" => ['required', 'email', Rule::unique(Profile::class)->ignore($profile?->id)],
+            "username" => ['required', 'string', Rule::unique(Profile::class)->ignore($profile?->id)],
+            "hidden_words" => ['nullable', 'string'],
+            "bio" => ['nullable', 'string'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'cover' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:4096'],
         ];
     }
 }

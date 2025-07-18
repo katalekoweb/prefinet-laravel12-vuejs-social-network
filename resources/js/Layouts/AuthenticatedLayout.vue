@@ -83,8 +83,15 @@ const showingNavigationDropdown = ref(false);
                                         <DropdownLink
                                             :href="route('profile.edit')"
                                         >
-                                            Profile
+                                            My account
                                         </DropdownLink>
+
+                                        <DropdownLink
+                                            :href="route('user.profiles.index')"
+                                        >
+                                            Profiles
+                                        </DropdownLink>
+
                                         <DropdownLink
                                             :href="route('logout')"
                                             method="post"
@@ -174,7 +181,7 @@ const showingNavigationDropdown = ref(false);
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')">
-                                Profile
+                                My account
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('logout')"

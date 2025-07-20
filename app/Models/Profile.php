@@ -9,7 +9,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Profile extends Model
 {
     protected $guarded = [];
-    public function tags () : BelongsToMany {
+    protected $appends = ['avatar_url', 'cover_url'];
+    
+    public function tags(): BelongsToMany
+    {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function getAvatarUrlAttribute()
+    {
+        return $this->avatar ? asset('storage/' . $this->avatar) : null;
+    }
+
+    public function getCoverUrlAttribute()
+    {
+        return $this->cover ? asset('storage/' . $this->cover) : null;
     }
 }

@@ -6,42 +6,121 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const props = defineProps({
-    tag: {
+    profile: {
         type: Object,
         default: () => ({})
     }
 })
 
 const form = useForm({
-    id: props.tag.id,
-    name: props.tag.name
+    id: props.profile.id,
+    name: props.profile.name,
+    username: props.profile.username,
+    email: props.profile.email,
+    bio: props.profile.bio,
+    avatar: "",
+    cover: "",
+    delete_avatar: null,
+    delete_cover: null
 })
 
 const save = () => {
-    if (props.tag.id) {
-        form.put(route('admin.tags.update', props.tag.id))
+    if (props.profile.id) {
+        form.post(route('user.profiles.update', {profile: props.profile.id, _method: "put"}))
     } else {
-        form.post(route('admin.tags.store'))
+        form.post(route('user.profiles.store'))
     }
+
+    console.log(form);
+    
+}
+
+const previewCoverUrl = ref(props.profile.cover_url)
+const previewAvatarUrl = ref(props.profile.avatar_url)
+
+const handleAvatarImage = (event) => {
+    const file = event.target.files[0]
+    form.avatar = file
+
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+            previewAvatarUrl.value = e.target.result
+        }
+        reader.readAsDataURL(file)
+    } else {
+        previewAvatarUrl.value = null
+    }
+}
+
+const handleCoverImage = (event) => {
+    const file = event.target.files[0]
+    form.cover = file
+
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+            previewCoverUrl.value = e.target.result
+        }
+        reader.readAsDataURL(file)
+    } else {
+        previewCoverUrl.value = null
+    }
+
 }
 
 </script>
 
 <template>
 
-    <Head :title="tag.id ? 'Edit tag' : 'New tag'" />
+    <Head :title="profile.id ? 'Edit profile' : 'New profile'" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                {{ tag.id ? 'Edit tag' : 'New tag' }}
+                {{ profile.id ? 'Edit profile' : 'New profile' }}
             </h2>
         </template>
 
-        <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="py-8">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-3">
+                <div :style="{
+                    backgroundImage: `url(${previewCoverUrl})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                }" class="overflow-hidden bg-white h-[200px] shadow-md sm:rounded-lg dark:bg-gray-800 p-6 relative">
+                    <div class="absolute bottom-3 left-3 h-32 w-32 rounded-xl flex flex-col items-center justify-center shadow-md bg-gray-200 "
+                        :style="{
+                            backgroundImage: `url(${previewAvatarUrl})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                        }">
+                        <InputLabel for="avatar" value="Change Avatar"
+                            class=" bg-gray-500 shadow-md px-2 bg-opacity-70 text-white rounded-md" />
+
+                        <label v-if="profile.avatar" for="delete_avatar" class="bg-gray-300 bg-opacity-40 p-1 rounded-md mt-2 px-5">
+                            <input type="checkbox" name="delete_avatar" id="delete_avatar" v-model="form.delete_avatar">
+                            <span>Delete</span>
+                        </label>
+
+                        <input @input="handleAvatarImage" id="avatar" type="file" class="mt-1 hidden w-full" />
+                        <InputError class="mt-2" :message="form.errors.avatar" />
+                    </div>
+                    <div
+                        class="absolute top-3 right-3  h-20 flex flex-col items-center justify-center">
+                        <InputLabel for="cover" value="Cover" class="shadow-md bg-gray-200 rounded-md px-12 py-2" />
+                        <label v-if="profile.cover" for="delete_cover" class="bg-gray-400 bg-opacity-60 p-1 rounded-md mt-2 px-5">
+                            <input type="checkbox" name="delete_cover" id="delete_cover" v-model="form.delete_cover">
+                            <span>Delete</span>
+                        </label>
+                        <input id="cover" type="file" class="mt-1 hidden w-full" @input="handleCoverImage" />
+                        <InputError class="mt-2" :message="form.errors.cover" />
+                    </div>
+                </div>
+
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
                     <div class="p-6 text-gray-900 dark:text-gray-100 space-y-3">
 
@@ -49,6 +128,31 @@ const save = () => {
                             <InputLabel for="name" value="Name" />
                             <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" />
                             <InputError class="mt-2" :message="form.errors.name" />
+                        </div>
+
+                        <div class="mt-4">
+                            <InputLabel for="username" value="Username" />
+                            <TextInput id="username" type="text" class="mt-1 block w-full" v-model="form.username" />
+                            <InputError class="mt-2" :message="form.errors.username" />
+                        </div>
+
+                        <div class="mt-4">
+                            <InputLabel for="email" value="Email" />
+                            <TextInput id="email" type="email" class="mt-1 block w-full" v-model="form.email" />
+                            <InputError class="mt-2" :message="form.errors.email" />
+                        </div>
+
+                        <div class="mt-4">
+                            <InputLabel for="email" value="Bio" />
+                            <textarea id="bio" type="email" class="mt-1 block w-full rounded-lg border border-gray-200"
+                                v-model="form.bio"></textarea>
+                            <InputError class="mt-2" :message="form.errors.bio" />
+                        </div>
+
+                        <div>
+                            <progress v-if="form.progress" :value="form.progress.percentage" max="100">
+                                {{ form.progress.percentage }}%
+                            </progress>
                         </div>
 
                         <div class="flex items-center justify-end">

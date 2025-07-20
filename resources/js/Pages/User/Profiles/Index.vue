@@ -7,7 +7,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
-    proflies: {
+    profiles: {
         type: Object,
         default: () => ({})
     }
@@ -49,19 +49,17 @@ const deleteRecord = (id) => {
                             <table class="w-full">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
                                         <th>Name</th>
                                         <th>Username</th>
-                                        <th>Email</th>
+                                        <!-- <th>Email</th> -->
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="profile in proflies.data" :key="profile.id">
-                                        <td>{{ profile.id }}</td>
+                                    <tr v-for="profile in profiles.data" :key="profile.id">
                                         <td>{{ profile.name }}</td>
-                                        <td>{{ profile.username }}</td>
-                                        <td>{{ profile.email }}</td>
+                                        <td class="text-blue-600">@{{ profile.username }}</td>
+                                        <!-- <td>{{ profile.email }}</td> -->
                                         <td class=" flex items-center space-x-2">
                                             <Link :href="route('user.profiles.edit', profile.id)">
                                             <SecondaryButton>Edit</SecondaryButton>
@@ -74,7 +72,7 @@ const deleteRecord = (id) => {
                         </div>
 
                         <div>
-                            <Pagination :links="proflies.links" />
+                            <Pagination :links="profiles.links" />
                         </div>
 
                     </div>

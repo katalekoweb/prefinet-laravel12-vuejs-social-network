@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileRequest;
 use App\Models\Profile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Ramsey\Uuid\Uuid;
+
+use function PHPUnit\Framework\isEmpty;
 
 class ProfileController extends Controller
 {
@@ -63,7 +66,17 @@ class ProfileController extends Controller
      */
     public function store(ProfileRequest $request)
     {
-        $profile = Profile::query()->create($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('avatar')) {
+            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        if ($request->hasFile('cover')) {
+            $data['cover'] = $request->file('cover')->store('covers', 'public');
+        }
+
+        $profile = Profile::query()->create($data);
         return redirect(route('user.profiles.index'))->with('success', __('Profile created'));
     }
 
@@ -88,7 +101,41 @@ class ProfileController extends Controller
      */
     public function update(ProfileRequest $request, Profile $profile)
     {
-        $profile->update($request->validated());
+        $data = $request->validated();
+
+        if (is_null($data['cover']) or isEmpty($data['cover'])) unset($data['cover']);
+        if (is_null($data['avatar']) or isEmpty($data['avatar'])) unset($data['avatar']);
+
+        // Delete old avatar if a new one is uploaded
+        if ($request->hasFile('avatar')) {
+            if ($profile->avatar && Storage::disk('public')->exists($profile->avatar)) {
+                Storage::disk('public')->delete($profile->avatar);
+            }
+            
+            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        } else if ($request->boolean('delete_avatar')) {
+            if ($profile->avatar && Storage::disk('public')->exists($profile->avatar)) {
+                Storage::disk('public')->delete($profile->avatar);
+            }
+
+            $data['avatar'] = null;
+        }
+
+        // Delete old cover if a new one is uploaded
+        if ($request->hasFile('cover')) {
+            if ($profile->cover && Storage::disk('public')->exists($profile->cover)) {
+                Storage::disk('public')->delete($profile->cover);
+            }
+
+            $data['cover'] = $request->file('cover')->store('covers', 'public');
+        } else if ($request->boolean('delete_cover')) {
+            if ($profile->cover && Storage::disk('public')->exists($profile->cover)) {
+                Storage::disk('public')->delete($profile->cover);
+            }
+            $data['cover'] = null;
+        }
+
+        $profile->update($data);
         return redirect(route('user.profiles.index'))->with('success', __('Profile updated'));
     }
 

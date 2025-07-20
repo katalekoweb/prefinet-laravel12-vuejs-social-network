@@ -32,7 +32,7 @@ class ProfileRequest extends FormRequest
             "hidden_words" => ['nullable', 'string'],
             "bio" => ['nullable', 'string'],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
-            'cover' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:4096'],
+            'cover' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:8096'],
         ];
     }
 }

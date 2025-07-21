@@ -175,7 +175,7 @@ const showingNavigationDropdown = ref(false);
                 </div>
 
                 <!-- Right Column (Scrollable) -->
-                <div class="w-2/3 bg-white shadow overflow-y-auto mt-8">
+                <div class="w-2/3 mt-8">
                     <!-- Page Content -->
                     <main>
                         <slot />

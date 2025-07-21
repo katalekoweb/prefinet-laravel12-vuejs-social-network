@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileRequest;
 use App\Models\Profile;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -57,8 +58,9 @@ class ProfileController extends Controller
     {
         $profile = new Profile();
         $profile->name = auth()->user()->name;
+        $tags = Tag::select('name', 'id')->orderBy('name')->get();
 
-        return Inertia::render("User/Profiles/Form", compact('profile'));
+        return Inertia::render("User/Profiles/Form", compact('profile', 'tags'));
     }
 
     /**
@@ -67,6 +69,7 @@ class ProfileController extends Controller
     public function store(ProfileRequest $request)
     {
         $data = $request->validated();
+        $data['user_id'] = auth()->id();
 
         if ($request->hasFile('avatar')) {
             $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
@@ -77,6 +80,9 @@ class ProfileController extends Controller
         }
 
         $profile = Profile::query()->create($data);
+        $profile->tags()->sync(request()->input('tags', []));
+        $profile->preferences()->sync(request()->input('preferences', []));
+
         return redirect(route('user.profiles.index'))->with('success', __('Profile created'));
     }
 
@@ -85,7 +91,10 @@ class ProfileController extends Controller
      */
     public function show(Profile $profile)
     {
-        return Inertia::render("User/Profiles/Form", compact('profile'));
+        $profile->tags = $profile->tags;
+        $profile->preferences = $profile->preferences;
+        $tags = Tag::select('name', 'id')->orderBy('name')->get();
+        return Inertia::render("User/Profiles/Form", compact('profile', 'tags'));
     }
 
     /**
@@ -93,7 +102,10 @@ class ProfileController extends Controller
      */
     public function edit(Profile $profile)
     {
-        return Inertia::render("User/Profiles/Form", compact('profile'));
+        $profile->tags = $profile->tags;
+        $profile->preferences = $profile->preferences;
+        $tags = Tag::select('name', 'id')->orderBy('name')->get();
+        return Inertia::render("User/Profiles/Form", compact('profile', 'tags'));
     }
 
     /**
@@ -136,6 +148,9 @@ class ProfileController extends Controller
         }
 
         $profile->update($data);
+        $profile->tags()->sync(request()->input('tags', []));
+        $profile->preferences()->sync(request()->input('preferences', []));
+
         return redirect(route('user.profiles.index'))->with('success', __('Profile updated'));
     }
 
@@ -148,5 +163,13 @@ class ProfileController extends Controller
 
         $profile->delete();
         return redirect(route('user.profiles.index'))->with('success', __('Profile deleted successfull'));
+    }
+
+    public function select (Profile $profile) {
+        $user = auth()->user();
+        $user->profile_id = $profile->id;
+        $user->save();
+
+        return redirect(route('user.profiles.index'))->with('success', __('Profile selected successfull')); 
     }
 }

@@ -25,6 +25,16 @@ const deleteRecord = (id) => {
     }
 }
 
+const selectProfile = (id) => {
+    const form = useForm({
+            id: id
+        })
+
+        form.post(route('user.select.profile', id), {
+            onSuccess: () => { }
+        })
+}
+
 </script>
 
 <template>
@@ -37,7 +47,7 @@ const deleteRecord = (id) => {
                 <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
                     Profiles
                 </h2>
-                <Link :href="route('user.profiles.create')">New</Link>
+                <Link class="underline" :href="route('user.profiles.create')">New</Link>
             </div>
         </template>
 
@@ -61,6 +71,11 @@ const deleteRecord = (id) => {
                                         <td class="text-blue-600">@{{ profile.username }}</td>
                                         <!-- <td>{{ profile.email }}</td> -->
                                         <td class=" flex items-center space-x-2">
+                                            
+                                            <SecondaryButton @click="selectProfile(profile.id)" v-if="$page.props.auth.user.profile_id != profile.id">
+                                                Select wdfwdefwee
+                                            </SecondaryButton>
+
                                             <Link :href="route('user.profiles.edit', profile.id)">
                                             <SecondaryButton>Edit</SecondaryButton>
                                             </Link>

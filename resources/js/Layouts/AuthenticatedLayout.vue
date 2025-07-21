@@ -89,7 +89,7 @@ const showingNavigationDropdown = ref(false);
                                         <DropdownLink
                                             :href="route('user.profiles.index')"
                                         >
-                                            Profiles
+                                            Profiles (@{{ $page.props.auth?.profile?.username ?? 'Select a profile' }})
                                         </DropdownLink>
 
                                         <DropdownLink

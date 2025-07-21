@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\ProfileController as ControllersProfileController;
+use App\Http\Controllers\User\PreferenceController;
 use App\Http\Controllers\User\ProfileController;
+use App\Http\Controllers\User\ProfileTagController;
 use App\Http\Middleware\Admin;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +34,9 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('user')->name('user.')->group(function () {
         Route::resource('profiles', ProfileController::class);
+        Route::post('profile/{profile}/select', [ProfileController::class, 'select'])->name('select.profile');
+        Route::resource('tags', ProfileTagController::class);
+        Route::resource('preferences', PreferenceController::class);
     });
 });
 

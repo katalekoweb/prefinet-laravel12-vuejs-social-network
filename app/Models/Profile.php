@@ -16,13 +16,18 @@ class Profile extends Model
         return $this->belongsToMany(Tag::class);
     }
 
+    public function preferences(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'preferences');
+    }
+
     public function getAvatarUrlAttribute()
     {
-        return $this->avatar ? asset('storage/' . $this->avatar) : null;
+        return $this->avatar ? asset('storage/' . $this->avatar) : asset('images/bg.jpg');
     }
 
     public function getCoverUrlAttribute()
     {
-        return $this->cover ? asset('storage/' . $this->cover) : null;
+        return $this->cover ? asset('storage/' . $this->cover) :  asset('images/bg.jpg');
     }
 }

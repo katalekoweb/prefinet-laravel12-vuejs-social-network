@@ -27,7 +27,7 @@ class ProfileRequest extends FormRequest
 
         return [
             "name" => ['required', 'string'],
-            "email" => ['required', 'email', Rule::unique(Profile::class)->ignore($profile?->id)],
+            "email" => ['nullable', 'email', Rule::unique(Profile::class)->ignore($profile?->id)],
             "username" => ['required', 'string', Rule::unique(Profile::class)->ignore($profile?->id)],
             "hidden_words" => ['nullable', 'string'],
             "bio" => ['nullable', 'string'],

@@ -73,7 +73,7 @@ const selectProfile = (id) => {
                                         <td class=" flex items-center space-x-2">
                                             
                                             <SecondaryButton @click="selectProfile(profile.id)" v-if="$page.props.auth.user.profile_id != profile.id">
-                                                Select wdfwdefwee
+                                                Select
                                             </SecondaryButton>
 
                                             <Link :href="route('user.profiles.edit', profile.id)">
